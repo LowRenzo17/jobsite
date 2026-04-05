@@ -45,7 +45,11 @@ const Job = ({job}) => {
                 <Badge className={'text-[#7209b7] font-bold'} variant="ghost">{job?.salary}LPA</Badge>
             </div>
             <div className='flex items-center gap-4 mt-4'>
-                <Button onClick={()=> navigate(`/description/${job?._id}`)} variant="outline">Details</Button>
+                {job?.isExternal ? (
+                    <Button onClick={() => window.open(job?.sourceUrl, '_blank')} variant="outline" className="text-blue-600 border-blue-600 hover:bg-blue-50">Apply Externally</Button>
+                ) : (
+                    <Button onClick={()=> navigate(`/description/${job?._id}`)} variant="outline">Details</Button>
+                )}
                 <Button className="bg-[#7209b7]">Save For Later</Button>
             </div>
         </div>

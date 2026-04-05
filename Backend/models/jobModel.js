@@ -39,14 +39,23 @@ const jobSchema = new mongoose.Schema({
     },
     created_by: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User',
-        required: true
+        ref: 'User'
     },
     applications: [
         {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Application',
         }
-    ]
+    ],
+    isExternal: {
+        type: Boolean,
+        default: false
+    },
+    sourceUrl: {
+        type: String,
+    },
+    sourcePlatform: {
+        type: String,
+    }
 },{timestamps:true});
 export const Job = mongoose.model("Job", jobSchema);

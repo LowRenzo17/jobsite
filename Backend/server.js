@@ -34,7 +34,10 @@ app.use("/api/v1/application", applicationRoute);
 
 
 
+import { initSchedulers } from "./cron/scheduler.js";
+
 app.listen(PORT,()=>{
     connectDB();
+    initSchedulers(); // Start background jobs
     console.log(`Server running at port ${PORT}`);
 })
