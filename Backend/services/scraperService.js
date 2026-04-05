@@ -22,6 +22,63 @@ async function getOrCreateCompany(companyName) {
 // Official API Integrations
 // ----------------------------------------------------
 
+export const scrapeMyJobMag = async () => {
+    console.log("[Aggregator] Starting MyJobMag Kenya scrape...");
+    try {
+        const { data } = await axios.get('https://www.myjobmag.co.ke/', {
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Cache-Control': 'no-cache'
+            }
+        });
+        const $ = cheerio.load(data);
+        
+        let newJobsCount = 0;
+        const jobElements = $('.job-info').toArray().slice(0, 10);
+        
+        for (const el of jobElements) {
+            try {
+                const titleElement = $(el).find('h2 a');
+                const title = titleElement.text().trim();
+                const relativeLink = titleElement.attr('href');
+                if (!title || !relativeLink) continue;
+
+                const sourceUrl = `https://www.myjobmag.co.ke${relativeLink}`;
+                const existing = await Job.findOne({ sourceUrl });
+                if (existing) continue;
+
+                const companyName = $(el).find('.job-comp-name a').text().trim() || "MyJobMag Employer";
+                let location = $(el).find('.location').text().trim() || "Nairobi, Kenya";
+                if (!location.toLowerCase().includes("kenya")) location += ", Kenya";
+
+                const companyId = await getOrCreateCompany(companyName);
+
+                await Job.create({
+                    title,
+                    description: `This is an external job posting securely scraped from MyJobMag Kenya. Please apply directly via the source link.`,
+                    requirements: ["Please visit source link for detailed requirements"],
+                    salary: 0,
+                    location: location,
+                    jobType: "FullTime",
+                    experienceLevel: 0,
+                    position: 1,
+                    company: companyId,
+                    isExternal: true,
+                    sourceUrl,
+                    sourcePlatform: "MyJobMag"
+                });
+                newJobsCount++;
+            } catch (innerErr) {}
+        }
+        console.log(`[Aggregator] MyJobMag finished. Added ${newJobsCount} new jobs.`);
+    } catch (error) {
+        console.error("[Aggregator] Failed to scrape MyJobMag:", error.message);
+    }
+};
+
+
 export const fetchRemotiveJobs = async () => {
     console.log("[Aggregator] Starting Remotive API scan...");
     try {
@@ -109,6 +166,7 @@ export const fetchArbeitNowJobs = async () => {
 
 export const runAllScrapers = async () => {
     console.log("=== Starting Master Job Aggregation ===");
+    await scrapeMyJobMag();
     await fetchRemotiveJobs();
     await fetchArbeitNowJobs();
     
