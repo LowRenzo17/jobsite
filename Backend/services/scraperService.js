@@ -31,6 +31,11 @@ export const fetchRemotiveJobs = async () => {
         let newJobsCount = 0;
         for (const jobData of data.jobs) {
             const sourceUrl = jobData.url;
+            
+            const fullText = (jobData.title + " " + jobData.description).toLowerCase();
+            const isEnglish = fullText.includes(" the ") && fullText.includes(" and ") && fullText.includes(" to ");
+            if (!isEnglish) continue;
+            
             const existing = await Job.findOne({ sourceUrl });
             if (existing) continue;
 
@@ -69,6 +74,12 @@ export const fetchArbeitNowJobs = async () => {
 
         for (const jobData of jobElements) {
             const sourceUrl = jobData.url;
+
+            // Language Enforcer: ArbeitNow often posts in German. Drop non-English jobs.
+            const fullText = (jobData.title + " " + jobData.description).toLowerCase();
+            const isEnglish = fullText.includes(" the ") && fullText.includes(" and ") && fullText.includes(" to ");
+            if (!isEnglish) continue;
+
             const existing = await Job.findOne({ sourceUrl });
             if (existing) continue;
 
