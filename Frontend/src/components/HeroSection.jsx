@@ -21,7 +21,7 @@ const HeroSection = () => {
         <span className=" mx-auto px-4 py-2 rounded-full bg-gray-100 text-[#F83002] font-medium">
           No. 1 Job Hunt Website in Kenya
         </span>
-        <h1 className="text-5xl font-bold">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-bold">
           Search, Apply & <br /> Get Your{" "}
           <span className="text-[#6A38C2]">Dream Jobs</span>
         </h1>
@@ -30,7 +30,7 @@ const HeroSection = () => {
           Discover thousands of exciting career opportunities from top companies
           across Kenya and beyond — all in one place.
         </p>
-        <div className="flex w-[40%] shadow-lg border border-gray-200 pl-3 rounded-full items-center gap-4 mx-auto">
+        <div className="flex w-full md:w-[40%] shadow-lg border border-gray-200 pl-3 rounded-full items-center gap-4 mx-auto">
           <input
             type="text"
             placeholder="Find your dream jobs"
