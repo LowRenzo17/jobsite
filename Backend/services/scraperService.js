@@ -36,7 +36,7 @@ export const scrapeMyJobMag = async () => {
         const $ = cheerio.load(data);
         
         let newJobsCount = 0;
-        const jobElements = $('.job-info').toArray().slice(0, 10);
+        const jobElements = $('.job-info').toArray().slice(0, 30);
         
         for (const el of jobElements) {
             try {
@@ -103,7 +103,7 @@ export const fetchRemotiveJobs = async () => {
                 description: jobData.description.replace(/<[^>]+>/g, '').substring(0, 500) + '...',
                 requirements: jobData.tags || ["Remote"],
                 salary: 0, // Remotive usually buries salary in text
-                location: jobData.candidate_required_location || "Remote/Global",
+                location: (!jobData.candidate_required_location || jobData.candidate_required_location === "Worldwide") ? "Remote/Global (Available in Kenya)" : jobData.candidate_required_location + " (Available in Kenya)",
                 jobType: jobData.job_type ? jobData.job_type.replace("_", " ") : "Remote",
                 experienceLevel: 0,
                 position: 1,
@@ -147,7 +147,7 @@ export const fetchArbeitNowJobs = async () => {
                 description: jobData.description.replace(/<[^>]+>/g, '').substring(0, 500) + '...',
                 requirements: jobData.tags || [],
                 salary: 0,
-                location: jobData.location || "Global Remote",
+                location: jobData.location ? jobData.location + " (Available in Kenya)" : "Global Remote (Available in Kenya)",
                 jobType: "FullTime",
                 experienceLevel: 0,
                 position: 1,
